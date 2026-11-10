@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Aimacs.Tests/Aimacs.Tests.csproj" />
+  <Project Path="Aimacs/Aimacs.csproj" />
+</Solution>
