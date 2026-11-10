@@ -21,6 +21,19 @@ public class XYEnvironmentTests
   [Fact]
   public void TestMakeEnvironment()
   {
-    Assert.True(true);
+    Assert.Equal(10, state.Width);
+    Assert.Equal(12, state.Height);
+    Assert.Equal(120, state.elements.Capacity);
   }
+
+  [Theory]
+	[InlineData(0, 5)]
+	[InlineData(5, 0)]
+	[InlineData(-1, 5)]
+  public void TestEnvironmentRejectsNonPositiveParams(int w, int h)
+  {
+    Assert.Throws<ArgumentOutOfRangeException>(() => CreateState(w, h));
+  }
+
+
 }

@@ -103,8 +103,8 @@ public static class XYEnv
     {
       Width = width;
       Height = height;
+      elements = new List<Element>(width * height);
       agents = [];
-      elements = [];
       locations = [];
     }
   }
