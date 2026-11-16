@@ -14,7 +14,7 @@ public class XYEnvironmentTests
     destination = new XYLocation(3, 3);
 
     state = CreateState(10, 12);
-    agent = CreateAgent(ref state); 
+    agent = AddAgent(ref state); 
     AddObjectToLocation(agent, ref state, source);
   }
 
@@ -33,6 +33,13 @@ public class XYEnvironmentTests
   public void TestEnvironmentRejectsNonPositiveParams(int w, int h)
   {
     Assert.Throws<ArgumentOutOfRangeException>(() => CreateState(w, h));
+  }
+
+  [Fact]
+  public void TestAddObject()
+  {
+    Assert.Single(state.agents);
+    Assert.Equal(new XYLocation(2, 2), GetLocation(agent, state));
   }
 
 

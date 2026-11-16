@@ -12,7 +12,7 @@ public static class XYEnv
   private static int NextId() => ++_counter;
 
   /***************************************************************************/
-  public struct TypeRef : IComparable<TypeRef>, IEquatable<TypeRef>
+	public struct TypeRef : IComparable<TypeRef>, IEquatable<TypeRef>
   {
     public readonly Type Type;
     public readonly int Id;
@@ -29,40 +29,34 @@ public static class XYEnv
       return "[" + name + ", " + Id + "]";
     }
 
-    public int CompareTo(TypeRef other) => Id.CompareTo(other.Id);
-    public bool Equals(TypeRef other) => Id == other.Id;
-    public override bool Equals(object? obj) => obj is TypeRef o && Equals(o);
-    public override int GetHashCode() => Id;
+    public readonly int CompareTo(TypeRef other) => Id.CompareTo(other.Id);
+    public readonly bool Equals(TypeRef other) => Id == other.Id;
+    public readonly override bool Equals(object? obj) => obj is TypeRef o && Equals(o);
+    public readonly override int GetHashCode() => Id;
     public static bool operator <(TypeRef a, TypeRef b) => a.Id < b.Id;
     public static bool operator >(TypeRef a, TypeRef b) => a.Id > b.Id;
     public static bool operator ==(TypeRef a, TypeRef b) => a.Id == b.Id;
     public static bool operator !=(TypeRef a, TypeRef b) => a.Id != b.Id;
   }
 
-  /***************************************************************************/
-    public interface ISimObject
-    {
-      TypeRef Ref { get; set; }
-    }
-
   /***************************************************************************/ 
-    public struct Agent : ISimObject 
+    public struct Agent
     {
       public bool IsAlive = true;
       public TypeRef Ref { get; set; }
-                          
-      public Agent() 
+
+      public Agent()
       {
         Ref = new TypeRef(Type.Agent);
       }
     }
 
   /***************************************************************************/ 
-    public struct Wall : ISimObject 
+    public struct Wall
     {
       public TypeRef Ref { get; set; }
 
-      public Wall() 
+      public Wall()
       {
         Ref = new TypeRef(Type.Wall);
       }
@@ -119,26 +113,27 @@ public static class XYEnv
   }
 
   /***************************************************************************/
-  public static TypeRef CreateObject<T>(ref XYState state) where T : struct, ISimObject 
+ public static TypeRef CreateObject(ref XYState state, Type type) 
   {
-    T obj = new();
+    var objRef = new TypeRef(type);
 
-    if (obj.Ref.Type == Type.Agent)
-      state.agents.Add(obj.Ref);
+    if (type == Type.Agent)
+      state.agents.Add(objRef);
 
-    return obj.Ref;
+    return objRef;
   }
 
   /***************************************************************************/
-  public static TypeRef CreateAgent(ref XYState state)
+  public static TypeRef AddAgent(ref XYState state)
   {
-    return CreateObject<Agent>(ref state);
+    return CreateObject(ref state, Type.Agent);
+
   }
 
   /***************************************************************************/ 
-  public static TypeRef CreateWall(ref XYState state)
+  public static TypeRef AddWall(ref XYState state)
   {
-    return CreateObject<Wall>(ref state);
+    return CreateObject(ref state, Type.Wall);
   }
 
   /***************************************************************************/ 
@@ -159,6 +154,10 @@ public static class XYEnv
   }
 
   /***************************************************************************/
+  public static XYLocation GetLocation(TypeRef obj, XYState state)
+  {
+    return state.locations[obj];
+  }
 
 }
 
