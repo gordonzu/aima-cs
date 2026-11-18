@@ -77,19 +77,41 @@ public class XYEnvironmentTests
     }
 
     [Fact]
-    public void TestAddAndMoveFailsWhenBlockedByWall()
+    public void TestAddAndMoveFailWhenBlockedByWall()
     {
         var a = CreateAgent();
+        var loc = new XYLocation(8, 8);
+
         Assert.True(AddObjectToLocation(CreateWall(), state, destination));
         Assert.False(AddObjectToLocation(a, state, destination));
-    }
+        Assert.False(MoveObjectToLocation(agent, state, destination));
 
+        Assert.True(AddObjectToLocation(CreateGold(), state, loc));
+        Assert.True(AddObjectToLocation(a, state, loc));
+        Assert.True(MoveObjectToLocation(agent, state, loc));
+    }
+    
     [Fact]
-    public void TestAddAndMoveSucceedWhenSharingLocationWithNonWall()
+    public void TestAddAndMoveFailWhenLocationIsOutOfBounds()
     {
         var a = CreateAgent();
+        var invalidLoc = new XYLocation(15, 15);
 
+        var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
+        {
+            AddObjectToLocation(a, state, invalidLoc);
+        });
+
+        Assert.Equal("loc", exception.ParamName);
+
+        var exception2 = Assert.Throws<ArgumentOutOfRangeException>(() =>
+        {
+            MoveObjectToLocation(agent, state, invalidLoc);
+        });
+
+        Assert.Equal("loc", exception2.ParamName);
     }
+
 
     [Fact]
     public void TestMoveObject()
@@ -99,8 +121,7 @@ public class XYEnvironmentTests
         Assert.True(MoveObjectToLocation(agent, state, loc));
         Assert.Equal(loc, GetLocation(agent, state));
         MoveObject(agent, state, Direction.North);
-        //Assert.Equal(new XYLocation(5, 6), GetLocation(agent, state));
-
+        Assert.Equal(new XYLocation(5, 6), GetLocation(agent, state));
     }
 
 

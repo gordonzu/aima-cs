@@ -11,7 +11,7 @@ public static class XYEnv
     private static int _counter = 0;
     private static int NextId() => ++_counter;
 
-	public readonly struct TypeRef : IComparable<TypeRef>, IEquatable<TypeRef>
+	  public readonly struct TypeRef : IComparable<TypeRef>, IEquatable<TypeRef>
     {
         public readonly Type Type;
         public readonly int Id;
@@ -59,21 +59,18 @@ public static class XYEnv
         }
     }
 
-    public readonly record struct XYLocation
+    public record struct XYLocation
     {
-        private readonly int _x; 
-        private readonly int _y;
-
-        public int X => _x;
-        public int Y => _y;
+        public int X { get; set; }
+        public int Y { get; set; }
 
         public XYLocation(int x, int y)
         {
             if (x <= 0) throw new ArgumentOutOfRangeException(nameof(x));
             if (y <= 0) throw new ArgumentOutOfRangeException(nameof(y));
 
-            _x = x;
-            _y = y;
+            X = x;
+            Y = y;
         } 
     }
 
@@ -135,33 +132,59 @@ public static class XYEnv
 
     public static bool MoveObject(TypeRef obj, XYState state, Direction d)
     {
-        return true;
+        var oldLoc = GetLocation(obj, state);
+        var newLoc = new XYLocation(1, 1);
+
+        switch (d)
+        {
+            case Direction.North:
+                newLoc.X = oldLoc.X;
+                newLoc.Y = oldLoc.Y + 1;
+                break;
+            case Direction.South:
+                newLoc.X = oldLoc.X;
+                newLoc.Y = oldLoc.Y - 1;
+                break;
+            case Direction.East:
+                newLoc.X = oldLoc.X + 1;
+                newLoc.Y = oldLoc.Y;
+                break;
+            case Direction.West:
+                newLoc.X = oldLoc.X - 1;
+                newLoc.Y = oldLoc.Y;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(d), "Direction not known.");
+        }
+
+        return MoveObjectToLocation(obj, state, newLoc);
     }
 
     public static bool GetObjectsAtLocation(XYState state, XYLocation loc, Span<TypeRef> dest, out int count)
     {
-      IsValidLocation(state, loc);
+        IsValidLocation(state, loc);
 
-      int required = 0;
-      for (int i = 0; i < state.elements.Count; i++)
-      {
-          if (state.elements[i].Loc == loc)
-              required++;
-      }
+        int required = 0;
+        for (int i = 0; i < state.elements.Count; i++)
+        {
+            if (state.elements[i].Loc == loc)
+                required++;
+        }
 
-      count = required;
-      if (required > dest.Length)
-          return false;
+        count = required;
+        if (required > dest.Length)
+            return false;
 
-      int written = 0;
-      for (int i = 0; i < state.elements.Count; i++)
-      {
-          var element = state.elements[i];
-          if (element.Loc == loc)
-              dest[written++] = element.T;
+        int written = 0;
 
-      }
-      return true;
+        for (int i = 0; i < state.elements.Count; i++)
+        {
+            var element = state.elements[i];
+            if (element.Loc == loc)
+                dest[written++] = element.T;
+        }
+
+        return true;
     }
 
     public static XYState CreateState(int width, int height)
@@ -197,7 +220,6 @@ public static class XYEnv
     {
         return CreateObject(Type.Dirt);
     }
-
 
     public static void IsValidLocation(XYState state, XYLocation loc)
     {
