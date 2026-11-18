@@ -11,7 +11,7 @@ public static class XYEnv
     private static int _counter = 0;
     private static int NextId() => ++_counter;
 
-	  public readonly struct TypeRef : IComparable<TypeRef>, IEquatable<TypeRef>
+	public readonly struct TypeRef : IComparable<TypeRef>, IEquatable<TypeRef>
     {
         public readonly Type Type;
         public readonly int Id;
@@ -99,7 +99,10 @@ public static class XYEnv
 
     public static bool AddObjectToLocation(TypeRef obj, XYState state, XYLocation loc)
     {
-        CheckLocation(state, loc);
+        IsValidLocation(state, loc);
+
+        if (IsBlocked(state, loc))
+            return false;
 
         if (obj.Type == Type.Agent) 
             state.agents.Add(obj);
@@ -115,7 +118,10 @@ public static class XYEnv
         if (!state.locations.ContainsKey(obj))
             throw new KeyNotFoundException("Object not found.");
 
-        CheckLocation(state, loc);
+        IsValidLocation(state, loc);
+
+        if (IsBlocked(state, loc))
+            return false;
 
         state.locations[obj] = loc;
        
@@ -127,9 +133,14 @@ public static class XYEnv
         return true;
     }
 
+    public static bool MoveObject(TypeRef obj, XYState state, Direction d)
+    {
+        return true;
+    }
+
     public static bool GetObjectsAtLocation(XYState state, XYLocation loc, Span<TypeRef> dest, out int count)
     {
-      CheckLocation(state, loc);
+      IsValidLocation(state, loc);
 
       int required = 0;
       for (int i = 0; i < state.elements.Count; i++)
@@ -177,14 +188,40 @@ public static class XYEnv
         return CreateObject(Type.Wall);
     }
 
-    public static void CheckLocation(XYState state, XYLocation loc)
+    public static TypeRef CreateGold()
+    {
+        return CreateObject(Type.Gold);
+    }
+
+    public static TypeRef CreateDirt()
+    {
+        return CreateObject(Type.Dirt);
+    }
+
+
+    public static void IsValidLocation(XYState state, XYLocation loc)
     {
         if (loc.X <= 0 || loc.X > state.Width || loc.Y <= 0 || loc.Y > state.Height) 
             throw new ArgumentOutOfRangeException(nameof(loc));
     }
+
+    public static bool IsBlocked(XYState state, XYLocation loc)
+    {
+        for (int i = 0; i < state.elements.Count; i++)
+        {
+            if (state.elements[i].Loc == loc)
+                if (state.elements[i].T.Type == Type.Wall)
+                    return true;
+        }
+        return false;
+    }
     
     public static XYLocation GetLocation(TypeRef obj, XYState state)
     {
+        int index = state.elements.FindIndex(e => e.T == obj);
+        if (index < 0)
+            throw new KeyNotFoundException("Element not found.");
+
         return state.locations[obj];
     }
 

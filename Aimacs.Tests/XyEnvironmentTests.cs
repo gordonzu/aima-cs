@@ -27,9 +27,9 @@ public class XYEnvironmentTests
     }
 
     [Theory]
-	  [InlineData(0, 5)]
-	  [InlineData(5, 0)]
-	  [InlineData(-1, 5)]
+	[InlineData(0, 5)]
+	[InlineData(5, 0)]
+	[InlineData(-1, 5)]
     public void TestEnvironmentRejectsNonPositiveParams(int w, int h)
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => CreateState(w, h));
@@ -73,6 +73,34 @@ public class XYEnvironmentTests
 
         Assert.True(MoveObjectToLocation(agent, state, loc));
         Assert.Equal(loc, GetLocation(agent, state));
+        Assert.NotEqual(source, GetLocation(agent, state));
+    }
+
+    [Fact]
+    public void TestAddAndMoveFailsWhenBlockedByWall()
+    {
+        var a = CreateAgent();
+        Assert.True(AddObjectToLocation(CreateWall(), state, destination));
+        Assert.False(AddObjectToLocation(a, state, destination));
+    }
+
+    [Fact]
+    public void TestAddAndMoveSucceedWhenSharingLocationWithNonWall()
+    {
+        var a = CreateAgent();
+
+    }
+
+    [Fact]
+    public void TestMoveObject()
+    {
+        var loc = new XYLocation(5, 5);
+
+        Assert.True(MoveObjectToLocation(agent, state, loc));
+        Assert.Equal(loc, GetLocation(agent, state));
+        MoveObject(agent, state, Direction.North);
+        //Assert.Equal(new XYLocation(5, 6), GetLocation(agent, state));
+
     }
 
 
