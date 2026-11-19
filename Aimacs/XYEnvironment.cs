@@ -282,6 +282,24 @@ public static class XYEnv
         return state.locations[obj];
     }
 
+    public static void MakePerimeter(XYState state)
+    {
+        int width = state.Width;
+        int height = state.Height;
+
+        for (int i = 1; i <= width; i++)
+        {
+            AddObjectToLocation(CreateWall(), state, new XYLocation(i, 1));
+            if (height > 1) AddObjectToLocation(CreateWall(), state, new XYLocation(i, height));
+        }
+
+        for (int y = 2; y < height; y++)
+        {
+            AddObjectToLocation(CreateWall(), state, new XYLocation(1, y));
+            if (width > 1) AddObjectToLocation(CreateWall(), state, new XYLocation(width, y));
+        }
+    }
+
 }
 
 

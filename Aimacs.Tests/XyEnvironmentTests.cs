@@ -140,8 +140,10 @@ public class XYEnvironmentTests
         Assert.Equal(loc1, GetLocation(agent, state));
 
         var b = CreateAgent();
-        var c = CreateAgent();
+        var c = CreateGold();
         var w = CreateWall();
+        var invalid = CreateAgent();
+
 
         Assert.True(AddObjectToLocation(b, state, new XYLocation(7, 4)));
         Assert.True(AddObjectToLocation(c, state, new XYLocation(5, 7)));
@@ -149,35 +151,23 @@ public class XYEnvironmentTests
 
         Assert.True(GetObjectsNear(agent, state, 3, buf, out int count));
         Assert.Equal(2, count);
+
+        Assert.Throws<KeyNotFoundException>(() => 
+            GetObjectsNear(invalid, state, 3, new TypeRef[1], out int count));
     }
 
+    [Fact]
+    public void TestMakePerimeter()
+    {
+        MakePerimeter(state);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        Assert.True(IsBlocked(state, new XYLocation(1, 1)));
+        Assert.True(IsBlocked(state, new XYLocation(1, 7)));
+        Assert.True(IsBlocked(state, new XYLocation(1, 12)));
+        Assert.True(IsBlocked(state, new XYLocation(7, 1)));
+        Assert.True(IsBlocked(state, new XYLocation(10, 1)));
+        Assert.True(IsBlocked(state, new XYLocation(10, 7)));
+        Assert.True(IsBlocked(state, new XYLocation(10, 12)));
+        Assert.True(IsBlocked(state, new XYLocation(7, 12)));
+    }
 }
