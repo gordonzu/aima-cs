@@ -187,6 +187,41 @@ public static class XYEnv
         return true;
     }
 
+    public static bool WithinRadius(int radius, XYLocation loc1, XYLocation loc2)
+    {
+        if (radius < 0)
+            return false;
+
+        int dx = loc1.X - loc2.X;
+        int dy = loc1.Y - loc2.Y;
+
+        return dx * dx + dy * dy <= radius * radius;
+    }
+
+    public static bool GetObjectsNear(TypeRef t, XYState state, int radius, Span<TypeRef> buf, out int count)
+    {
+        var loc = GetLocation(t, state); // throws for unplaced object
+
+        count = 0;
+        for(int i = 0; i < state.elements.Count; i++)
+        {
+            var element = state.elements[i];
+            if (element.T.Id != t.Id) 
+            {
+                if (WithinRadius(radius, loc, element.Loc)) 
+                {
+                    buf[i] = element.T;
+                    count++;
+                }
+            }
+        }
+
+        if (count > 0)
+            return true;
+
+        return false;
+    }
+
     public static XYState CreateState(int width, int height)
     {
         if (width is < 1 or > 256 || height is < 1 or > 256)

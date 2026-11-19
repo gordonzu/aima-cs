@@ -133,10 +133,46 @@ public class XYEnvironmentTests
     [Fact]
     public void TestGetObjectsNear()
     {
-        var loc = new XYLocation(5, 5);
-        Assert.True(MoveObjectToLocation(agent, state, loc));
+        Span<TypeRef> buf = stackalloc TypeRef[16];
+        var loc1 = new XYLocation(5, 5);
 
+        Assert.True(MoveObjectToLocation(agent, state, loc1));
+        Assert.Equal(loc1, GetLocation(agent, state));
+
+        var b = CreateAgent();
+        var c = CreateAgent();
+        var w = CreateWall();
+
+        Assert.True(AddObjectToLocation(b, state, new XYLocation(7, 4)));
+        Assert.True(AddObjectToLocation(c, state, new XYLocation(5, 7)));
+        Assert.True(AddObjectToLocation(w, state, new XYLocation(3, 10)));
+
+        Assert.True(GetObjectsNear(agent, state, 3, buf, out int count));
+        Assert.Equal(2, count);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
