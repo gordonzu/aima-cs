@@ -92,7 +92,7 @@ public class XYEnvironmentTests
     }
     
     [Fact]
-    public void TestAddAndMoveFailWhenLocationIsOutOfBounds()
+    public void TestAddAndMoveThrowWhenLocationIsOutOfBounds()
     {
         var a = CreateAgent();
         var invalidLoc = new XYLocation(15, 15);
@@ -112,7 +112,6 @@ public class XYEnvironmentTests
         Assert.Equal("loc", exception2.ParamName);
     }
 
-
     [Fact]
     public void TestMoveObject()
     {
@@ -120,11 +119,24 @@ public class XYEnvironmentTests
 
         Assert.True(MoveObjectToLocation(agent, state, loc));
         Assert.Equal(loc, GetLocation(agent, state));
-        MoveObject(agent, state, Direction.North);
+
+        Assert.True(MoveObject(agent, state, Direction.North));
         Assert.Equal(new XYLocation(5, 6), GetLocation(agent, state));
+        Assert.True(MoveObject(agent, state, Direction.East));
+        Assert.Equal(new XYLocation(6, 6), GetLocation(agent, state));
+        Assert.True(MoveObject(agent, state, Direction.South));
+        Assert.Equal(new XYLocation(6, 5), GetLocation(agent, state));
+        Assert.True(MoveObject(agent, state, Direction.West));
+        Assert.Equal(new XYLocation(5, 5), GetLocation(agent, state));
     }
 
+    [Fact]
+    public void TestGetObjectsNear()
+    {
+        var loc = new XYLocation(5, 5);
+        Assert.True(MoveObjectToLocation(agent, state, loc));
 
+    }
 
 
 
